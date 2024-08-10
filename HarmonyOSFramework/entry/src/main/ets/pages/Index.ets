@@ -1,11 +1,11 @@
 import { window } from '@kit.ArkUI';
+import CommonConstants from '../common/constants/CommonConstants';
 
 @Entry
 @Component
 struct Index {
   @State topAvoidHeight: number = 0;
   @State bottomAvoidHeight: number = 0;
-  @State message: string = 'Hello World';
 
   onPageShow(): void {
     /**
@@ -20,8 +20,8 @@ struct Index {
         this.bottomAvoidHeight = px2vp(win.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM)
           .bottomRect.height);
         // 1.3. 存入全局变量
-        AppStorage.setOrCreate('topAvoidHeight', this.topAvoidHeight);
-        AppStorage.setOrCreate('bottomAvoidHeight', this.bottomAvoidHeight);
+        AppStorage.setOrCreate(CommonConstants.AVOID_HEIGHT_TOP, this.topAvoidHeight);
+        AppStorage.setOrCreate(CommonConstants.AVOID_HEIGHT_BOTTOM, this.bottomAvoidHeight);
       });
   }
 
