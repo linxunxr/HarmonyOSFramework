@@ -17,4 +17,10 @@ export default class CommonConstants {
    */
   // APP日志TAG
   static readonly LOGGER_PREFIX: string = "Framework";
+  // 用户首选项TAG
+  static readonly PREF_PREFIX: string = "[PrefTag]";
+  /**
+   * 用户首选项名字
+   */
+  static readonly PREF_STORE: string = "PrefStore";
 }

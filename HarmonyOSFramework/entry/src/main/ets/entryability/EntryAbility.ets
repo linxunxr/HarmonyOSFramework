@@ -1,6 +1,7 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
+import PreferencesUtil from '../common/utils/PreferencesUtil';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -20,6 +21,10 @@ export default class EntryAbility extends UIAbility {
     windowStage.getMainWindow().then(window => {
       window.setWindowLayoutFullScreen(true);
     });
+    /**
+     * 2. 首选项初始化
+     */
+    PreferencesUtil.loadPreference(this.context);
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
