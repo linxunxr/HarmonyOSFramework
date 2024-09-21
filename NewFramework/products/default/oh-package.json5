@@ -5,5 +5,8 @@
   "main": "",
   "author": "",
   "license": "",
-  "dependencies": {}
+  "dependencies": {
+    "base": "file:../../common/base",
+    "home": "file:../../features/home"
+  }
 }

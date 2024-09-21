@@ -1,9 +1,22 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
+import { BreakpointConstants, CommonConstants, WindowUtil } from 'base';
+import { deviceInfo } from '@kit.BasicServicesKit';
 
 export default class EntryAbility extends UIAbility {
+  private windowObject?: window.Window;
+  private windowUtil?: WindowUtil;
+  private onWindowSizeChange: (windowSize: window.Size) => void = (windowSize: window.Size) => {
+    this.windowUtil?.updateBreakpoint(windowSize.width);
+    AppStorage.setOrCreate(BreakpointConstants.WINDOW_WIDTH, windowSize.width);
+  }
+  private onWindowStatusChange: (windowStatusType: window.WindowStatusType) => void =
+    (windowStatusType: window.WindowStatusType) => {
+    this.windowUtil?.updateWindowStatusType(windowStatusType);
+  }
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    this.windowUtil = WindowUtil.getInstance();
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
   }
 
@@ -11,10 +24,24 @@ export default class EntryAbility extends UIAbility {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
   }
 
-  onWindowStageCreate(windowStage: window.WindowStage): void {
+  async onWindowStageCreate(windowStage: window.WindowStage): Promise<void> {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
-
+    windowStage.getMainWindow().then((data: window.Window) => {
+      this.windowObject = data;
+      this.windowUtil?.updateBreakpoint(this.windowObject.getWindowProperties().windowRect.width);
+      AppStorage.setOrCreate(BreakpointConstants.WINDOW_WIDTH, this.windowObject.getWindowProperties().windowRect.width);
+      this.windowObject.on("windowSizeChange", this.onWindowSizeChange);
+      this.windowObject.on("windowStatusChange", this.onWindowStatusChange);
+    })
+    if (this.windowUtil !== undefined) {
+      this.windowUtil.setWindowStage(windowStage);
+      await this.windowUtil.setMainWindow();
+      if (deviceInfo.deviceType !== CommonConstants.DEVICE_TYPES[0]) {
+        this.windowUtil.setFullScreen();
+      }
+      this.windowUtil.setAvoidRectHeight();
+    }
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');

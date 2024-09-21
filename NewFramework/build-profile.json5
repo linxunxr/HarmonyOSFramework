@@ -39,6 +39,10 @@
     {
       "name": "base",
       "srcPath": "./common/base",
+    },
+    {
+      "name": "home",
+      "srcPath": "./features/home",
     }
   ]
 }
