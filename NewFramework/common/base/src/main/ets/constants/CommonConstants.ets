@@ -30,6 +30,10 @@ export class CommonConstants {
    */
   static readonly WINDOW_UTIL_LIST: string[] = ["windowUtil"];
   /**
+   * 用户首选项 Util
+   */
+  static readonly PREFERENCE_UTIL: string = "prefUtil";
+  /**
    * 页面
    */
   static readonly PAGE_INFOS: string = "pagesInfos";

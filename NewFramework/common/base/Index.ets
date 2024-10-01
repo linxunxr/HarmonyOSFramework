@@ -4,3 +4,4 @@ export { BreakpointType } from './src/main/ets/utils/BreakpointType';
 export { DeviceScreen } from './src/main/ets/utils/DeviceScreen';
 export { default as Logger } from './src/main/ets/utils/Logger';
 export { WindowUtil } from './src/main/ets/utils/WindowUtil';
+export { PreferenceUtil } from './src/main/ets/utils/PreferenceUtil';
