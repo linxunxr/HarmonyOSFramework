@@ -16,6 +16,12 @@ export class CommonConstants {
   static readonly PREF_PREFIX: string = "[PrefTag]";
   // 数据库操作日志TAG
   static readonly RDB_PREFIX: string = "[RdbTag]";
+  // 键值数据库操作日志TAG
+  static readonly KV_PREFIX: string = "[KvTag]";
+  /**
+   * 包名
+   */
+  static readonly BUNDLE_NAME: string = "com.sparks_fire.framework.framework.new";
   /**
    * 用户首选项 名
    */
@@ -33,6 +39,10 @@ export class CommonConstants {
    * 用户首选项 Util
    */
   static readonly PREFERENCE_UTIL: string = "prefUtil";
+  /**
+   * 键值数据库 Util
+   */
+  static readonly KV_UTIL: string = "kvUtil";
   /**
    * 页面
    */
