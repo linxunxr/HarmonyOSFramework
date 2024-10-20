@@ -6,3 +6,4 @@ export { default as Logger } from './src/main/ets/utils/Logger';
 export { WindowUtil } from './src/main/ets/utils/WindowUtil';
 export { PreferenceUtil } from './src/main/ets/utils/PreferenceUtil';
 export { KvUtil } from './src/main/ets/utils/KvUtil';
+export { DBUtil } from './src/main/ets/utils/DBUtil';

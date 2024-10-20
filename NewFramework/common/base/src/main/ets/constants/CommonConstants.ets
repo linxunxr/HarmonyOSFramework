@@ -5,6 +5,7 @@
  * @version 1.0
  * @description: 通用常量
  */
+import { relationalStore } from '@kit.ArkData';
 
 export class CommonConstants {
   /**
@@ -44,6 +45,10 @@ export class CommonConstants {
    */
   static readonly KV_UTIL: string = "kvUtil";
   /**
+   * 数据库 Util
+   */
+  static readonly DB_UTIL: string = "dbUtil";
+  /**
    * 页面
    */
   static readonly PAGE_INFOS: string = "pagesInfos";
@@ -67,4 +72,11 @@ export class CommonConstants {
    * bar 高度
    */
   static readonly BAR_HEIGHT_LIST: number[] = [56, 80];
+  /**
+   * 数据库配置
+   */
+  static readonly STORE_CONFIG: relationalStore.StoreConfig = {
+    name: "framework.db",
+    securityLevel: relationalStore.SecurityLevel.S1
+  }
 }

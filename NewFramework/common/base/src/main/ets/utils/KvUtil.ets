@@ -12,8 +12,8 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 export class KvUtil {
   private kvManager?: distributedKVStore.KVManager;
-  private kvDeviceStore?: distributedKVStore.DeviceKVStore;
-  private kvSingleStore?: distributedKVStore.SingleKVStore;
+  private kvDeviceStores?: Map<string, distributedKVStore.DeviceKVStore>;
+  private kvSingleStores?: Map<string, distributedKVStore.SingleKVStore>;
   static getInstance(): KvUtil | undefined {
     if (!AppStorage.get<KvUtil>(CommonConstants.KV_UTIL)) {
       AppStorage.setOrCreate(CommonConstants.KV_UTIL, new KvUtil());
@@ -60,7 +60,7 @@ export class KvUtil {
             Logger.error(CommonConstants.KV_PREFIX, `创建数据库失败！code:${error.code}, message:${error.message}`);
             reject(error);
           }
-          this.kvSingleStore = store;
+          this.kvSingleStores?.set(name, store);
           Logger.debug(CommonConstants.KV_PREFIX, `创建数据库失败`);
           resolve();
         })
@@ -70,7 +70,7 @@ export class KvUtil {
             Logger.error(CommonConstants.KV_PREFIX, `创建数据库失败！code:${error.code}, message:${error.message}`);
             reject(error);
           }
-          this.kvDeviceStore = store;
+          this.kvDeviceStores?.set(name, store);
           Logger.debug(CommonConstants.KV_PREFIX, `创建数据库失败`);
           resolve();
         })
@@ -84,14 +84,14 @@ export class KvUtil {
    * @param isSingle 是否是 非分布式
    * @returns
    */
-  putData(key: string, value: distributedKVStore.ValueType, isSingle: boolean): Promise<void> {
+  putData(name: string, key: string, value: Uint8Array | string | number | boolean, isSingle: boolean): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (!this.kvManager) {
         Logger.error(CommonConstants.KV_PREFIX, `kvManager不存在！`);
         reject();
       }
       if (isSingle) {
-        this.kvSingleStore?.put(key, value)
+        this.kvSingleStores?.get(name)?.put(key, value)
           .then(() => {
             Logger.debug(CommonConstants.KV_PREFIX, `插入[${key}=${value}]成功`);
             resolve();
@@ -101,7 +101,7 @@ export class KvUtil {
             reject(error);
           })
       } else {
-        this.kvDeviceStore?.put(key, value)
+        this.kvDeviceStores?.get(name)?.put(key, value)
           .then(() => {
             Logger.debug(CommonConstants.KV_PREFIX, `插入[${key}=${value}]成功`);
             resolve();
@@ -119,14 +119,14 @@ export class KvUtil {
    * @param isSingle
    * @returns
    */
-  deleteData(key: string, isSingle: boolean): Promise<void> {
+  deleteData(name: string, key: string, isSingle: boolean): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (!this.kvManager) {
         Logger.error(CommonConstants.KV_PREFIX, `kvManager不存在！`);
         reject();
       }
       if (isSingle) {
-        this.kvSingleStore?.delete(key)
+        this.kvSingleStores?.get(name)?.delete(key)
           .then(() => {
             Logger.debug(CommonConstants.KV_PREFIX, `删除[${key}]成功`);
             resolve();
@@ -136,7 +136,7 @@ export class KvUtil {
             reject(error);
           })
       } else {
-        this.kvDeviceStore?.delete(key)
+        this.kvDeviceStores?.get(name)?.delete(key)
           .then(() => {
             Logger.debug(CommonConstants.KV_PREFIX, `删除[${key}]成功`);
             resolve();
@@ -148,30 +148,38 @@ export class KvUtil {
       }
     })
   }
-  getData<T>(key: string, isSingle: boolean): Promise<T> {
+  getData<T>(name: string, key: string, isSingle: boolean): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       if (!this.kvManager) {
         Logger.error(CommonConstants.KV_PREFIX, `kvManager不存在！`);
         reject();
       }
       if (isSingle) {
-        this.kvSingleStore?.get(key)
+        this.kvSingleStores?.get(name)?.get(key)
           .then((result) => {
-            Logger.debug(CommonConstants.KV_PREFIX, `删除[${key}]成功`);
+            Logger.debug(CommonConstants.KV_PREFIX, `查询[${key}]成功`);
             resolve(result as T);
           })
           .catch((error: BusinessError) => {
-            Logger.error(CommonConstants.KV_PREFIX, `删除[${key}]失败！code:${error.code}, message:${error.message}`);
+            if (error.code === 15100004) {
+              Logger.debug(CommonConstants.KV_PREFIX, `查询${key}不存在`);
+              resolve(null as T);
+            }
+            Logger.error(CommonConstants.KV_PREFIX, `查询[${key}]失败！code:${error.code}, message:${error.message}`);
             reject(error);
           })
       } else {
-        this.kvDeviceStore?.get(key)
+        this.kvDeviceStores?.get(name)?.get(key)
           .then((result) => {
-            Logger.debug(CommonConstants.KV_PREFIX, `删除[${key}]成功`);
+            Logger.debug(CommonConstants.KV_PREFIX, `查询[${key}]成功`);
             resolve(result as T);
           })
           .catch((error: BusinessError) => {
-            Logger.error(CommonConstants.KV_PREFIX, `删除[${key}]失败！code:${error.code}, message:${error.message}`);
+            if (error.code === 15100004) {
+              Logger.debug(CommonConstants.KV_PREFIX, `查询${key}不存在`);
+              resolve(null as T);
+            }
+            Logger.error(CommonConstants.KV_PREFIX, `查询[${key}]失败！code:${error.code}, message:${error.message}`);
             reject(error);
           })
       }

@@ -1,7 +1,7 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { BreakpointConstants, CommonConstants, KvUtil, PreferenceUtil, WindowUtil } from 'base';
+import { BreakpointConstants, CommonConstants, DBUtil, KvUtil, PreferenceUtil, WindowUtil } from 'base';
 import { deviceInfo } from '@kit.BasicServicesKit';
 
 export default class EntryAbility extends UIAbility {
@@ -9,6 +9,7 @@ export default class EntryAbility extends UIAbility {
   private windowUtil?: WindowUtil;
   private prefUtil?: PreferenceUtil;
   private kvUtil?: KvUtil;
+  private dbUtil?: DBUtil;
   private onWindowSizeChange: (windowSize: window.Size) => void = (windowSize: window.Size) => {
     this.windowUtil?.updateBreakpoint(windowSize.width);
     AppStorage.setOrCreate(BreakpointConstants.WINDOW_WIDTH, windowSize.width);
@@ -21,6 +22,7 @@ export default class EntryAbility extends UIAbility {
     this.windowUtil = WindowUtil.getInstance();
     this.prefUtil = PreferenceUtil.getInstance();
     this.kvUtil = KvUtil.getInstance();
+    this.dbUtil = DBUtil.getInstance();
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
   }
 
@@ -50,6 +52,7 @@ export default class EntryAbility extends UIAbility {
     this.prefUtil?.loadPreference(this.context);
     // 键值数据库初始化
     this.kvUtil?.initKv(this.context);
+    this.dbUtil?.initDB(this.context);
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
